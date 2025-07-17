@@ -34,6 +34,7 @@ public class TicTacToeGame implements TicTacToe {
         game = GameState.IN_PROGRESS;
         moveCount = 0;
         lastPlayer = Choice.OPEN;
+        lastMove = null;
     }
 
     @Override
@@ -48,7 +49,7 @@ public class TicTacToeGame implements TicTacToe {
             moves[moveCount] = new Point(row, col);
             lastPlayer = player;
 
-            //Check for a win
+            //Check if that was the winning move
             //Check rows
             for (row = 0; row < board.length; row++){
                 if (((board[row][0]) == (board[row][1])) && (board[row][0]) == (board[row][2])){
@@ -72,7 +73,28 @@ public class TicTacToeGame implements TicTacToe {
                 }
             }
             //Check Diagonals
-            if (board[row])
+            if ((board[0][0] == board[1][1]) && (board[0][0] == board[2][2])) {
+                if (board[0][0] == Choice.O){
+                    game = GameState.O_WON;
+                }
+                if (board[0][0] == Choice.X){
+                    game = GameState.X_WON;
+                }
+            }
+
+            if ((board[0][2] == board[1][1]) && (board[0][2] == board[2][0])) {
+                if (board[0][0] == Choice.O){
+                    game = GameState.O_WON;
+                }
+                if (board[0][0] == Choice.X){
+                    game = GameState.X_WON;
+                }
+            }
+            //Check for a tie
+            if (moveCount > 9 && game == GameState.IN_PROGRESS) {
+                game = GameState.TIE;
+            }
+
             return true;
         }
         else {
@@ -82,32 +104,51 @@ public class TicTacToeGame implements TicTacToe {
 
     @Override
     public TicTacToe.GameState getGameState() {
-
+        if (gameOver()){
+            return game;
+        }
+        else {
+            return GameState.IN_PROGRESS;
+        }
     }
 
     @Override
     public TicTacToe.Choice[][] getGameGrid() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getGameGrid'");
-    }
-
-    @Override
-    public Point[] getMoves() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getMoves'");
-    }
-
-    @Override
-    public Point[] lastMove() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'lastMove'");
-    }
+        Choice[][] copyBoard = new Choice[BOARD_DIM][BOARD_DIM];
+        for (int row = 0; row < copyBoard.length; row++){
+            for (int col = 0; col < copyBoard[row].length; col++){
+                copyBoard[row][col] = board[row][col];
+            }
+        }
+        return copyBoard;
+        }
 
 
     @Override
     public boolean gameOver() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'gameOver'");
+        if (game != GameState.IN_PROGRESS){
+            return false;
+        }
+        else {
+            return true;
+        }
+
+    }
+
+    @Override
+    public Point[] lastMove() {
+        lastMove = moves[moveCount-1];
+        return lastMove;
     }
     
+
+    @Override
+    public Point[] getMoves() {
+        Point[] copyMoves = new Point[moveCount-1];
+        for (int i = 0; i < copyMoves.length; i++){
+            copyMoves[i] = moves[i];
+        }
+        return copyMoves;
+    }
 }
+    
